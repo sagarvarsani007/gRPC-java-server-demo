@@ -9,6 +9,7 @@ import com.anand.grpc.UserServiceGrpc.UserServiceImplBase;
 import com.anand.grpc.UserServiceOuterClass.AddUserRequest;
 import com.anand.grpc.UserServiceOuterClass.GetAllUserRequest;
 import com.anand.grpc.UserServiceOuterClass.GetAllUserRequest.Response;
+import com.anand.grpc.UserServiceOuterClass.GetUserByIdRequest;
 import com.anand.grpc.UserServiceOuterClass.User;
 
 import io.grpc.stub.StreamObserver;
@@ -90,4 +91,23 @@ public class UserServiceImpl extends UserServiceImplBase {
       responseObserver.onError(ex);
     }
   }
+  
+  	/**
+	 * This method will get user object for given ID.
+	 * StreamObserver will observe for requested user. 
+	 */
+  	@Override
+	public void getUserById(GetUserByIdRequest request, StreamObserver<GetUserByIdRequest.Response> responseObserver) {
+		try {
+			logger.log(Level.INFO, "Sending request for userId:"+ request.getUserId());
+			User user = userData.get(Integer.parseInt(request.getUserId()));
+			GetUserByIdRequest.Response response = GetUserByIdRequest.Response.newBuilder().setUser(user).build();
+			responseObserver.onNext(response);
+			responseObserver.onCompleted();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+			logger.log(Level.WARNING, ex.getMessage());
+			responseObserver.onError(ex);
+	    } 
+	}
 }
